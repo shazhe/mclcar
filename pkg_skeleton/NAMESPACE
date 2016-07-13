@@ -1,0 +1,18 @@
+#exportPattern("^[[:alpha:]]+")
+import(spam, rsm, fields, maxLik, nleqslv, spdep)
+importFrom("grDevices", "dev.new", "terrain.colors")
+importFrom("graphics", "arrows", "contour", "lines", "par", "plot",
+             "points", "polygon", "title")
+importFrom("stats", "acf", "as.formula", "coef", "lm", "model.matrix",
+             "optim", "predict", "rbinom", "rnorm", "rpois", "runif",
+             "update", "var")
+export(CAR.simTorus, CAR.simWmat, CAR.simLM, CAR.simGLM, postZ, mcl.prep.dCAR,
+       mcl.prep.glm, loglik.dCAR, ploglik.dCAR, sigmabeta, get.beta.lm,
+       mcl.dCAR, mcl.profile.dCAR, 
+       mple.dCAR, vmle.dCAR, Avar.lik.dCAR,
+       mcl.glm, get.beta.glm, mcl.profile.glm, vmle.glm,
+       OptimMCL, summary.OptimMCL, rsmMCL, summary.rsmMCL, plot.rsmMCL)
+
+S3method(summary, OptimMCL)
+S3method(summary, rsmMCL)
+S3method(plot, rsmMCL)
