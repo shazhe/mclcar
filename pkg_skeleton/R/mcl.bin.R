@@ -69,8 +69,6 @@ mcl.bin<- function(pars, mcdata, Evar = FALSE){
     if (Evar){
         ## Assuming the samples are independent after thinning
         ## So a very rough estimate using the sample variance
-        var(exp(r.Zy))/mean(exp(r.Zy))^2/n.samples
-        var(exp(r.Zy.scale))/(r.exp.mean^2)/n.samples
         v.lr <- var(exp(r.Zy.scale - log(r.exp.mean)))/n.samples
 
         return(c(mc.lr, v.lr))
@@ -267,7 +265,7 @@ mcl.Hessian.bin <- function(pars, mcdata){
         H.rho2 <- -0.5*sum((ew/(1-rho*ew))^2)
         H.rho.sigma <- -0.5 * z %*% W %*% z/sigma^2
         H.sigma2 <-  -(z %*% Q %*% z)/(sigma^2) + 0.5*n.obs/sigma^2
-        H.beta2 <- crossprod(as.numeric(sqrt(n.trial * pz2))*covX)
+        H.beta2 <- -crossprod(as.numeric(sqrt(n.trial * pz2))*covX)
         H.mat[1,1] <- H.rho2
         H.mat[1,2] <- H.mat[2,1] <- H.rho.sigma
         H.mat[2,2] <- H.sigma2

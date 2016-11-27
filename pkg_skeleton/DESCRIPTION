@@ -1,15 +1,17 @@
 Package: mclcar
 Type: Package
-Title: Estimating Conditional Auto-Regression (CAR) Models using Monte
+Title: Estimating Conditional Auto-Regressive (CAR) Models using Monte
         Carlo Likelihood Methods
-Version: 0.1.3
-Date: 2016-07-12
+Version: 0.1.7
+Date: 2016-11-27
 Authors@R: c(person("Zhe", "Sha", role = c("aut", "cre"), email =
         "zhesha1006@gmail.com"))
 Author: Zhe Sha [aut, cre]
 Maintainer: Zhe Sha <zhesha1006@gmail.com>
 Description: The likelihood of direct CAR models and Binomial and Poisson GLM with latent CAR variables are approximated by the Monte Carlo likelihood. The Maximum Monte Carlo likelihood estimator is found either by an iterative procedure of directly maximising the Monte Carlo approximation or by a response surface design method.
 License: GPL (>=2)
+Depends: R (>= 2.10),
+LazyData: yes
 Imports: spam, rsm, fields, maxLik, nleqslv, spdep
 NeedsCompilation: no
 Suggests: knitr

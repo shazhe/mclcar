@@ -19,10 +19,9 @@ summary.OptimMCL.lm <- function(object, trace.all = TRUE, mc.covar=TRUE){
     mcmle <- c(mcmle.rho, mcmle.bs)
 
     if(mc.covar){
-        B <- Hessian.dCAR(mcmle, object$data) # Hessian at the mc.mle
-        invB <- solve(B)
-        A <- MCMLE.var(mcmle, data = data, simdata = mc.datas)
-        mc.var <- invB %*% A %*% invB/nrow(data$data.vec)
+      B <- Hessian.dCAR(mcmle, object$data) # Hessian at the mc.mle
+      res.mle <- list(par = mcmle, hessian = B)
+      mc.var <- vmle.dCAR(res.mle, data = data, simdata = mc.datas)
         ans <- list(MC.mle = mcmle, N.iter = niter, total.time = total.time,
                     convergence = convergence, hessian = mle.hessian, mc.covar = mc.var,
                     mc.samples = mc.samples)

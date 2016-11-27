@@ -39,8 +39,9 @@ Thesis, Oxford.
 \examples{
 #### Example 1: iterative optimising the Monte Carlo likelihood
 #######################################################################
+system.time({
 set.seed(33)
-n.torus <- 10
+n.torus <- 8
 nb <- 30
 rho <- 0.2
 sigma <- 1.5
@@ -78,4 +79,5 @@ rsm.mcmle <- rsmMCL(data = mydata3, psi0 = c(0, 1, 2, 2), family = "poisson",
                                        thin = 5, burns = 5e2,
                                        method = "mala", scale.fixed = TRUE))
 summary(rsm.mcmle, family = "poisson",  mc.covar=TRUE)
+})
 }

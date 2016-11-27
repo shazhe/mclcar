@@ -31,7 +31,7 @@ by \code{\link{rsmMCL}} contains results from all iterations or not.
 
 
 \author{
-Zhe Sha \email{sha@stats.ox.ac.uk}
+Zhe Sha \email{zhesha1006@gmail.com}
 }
 
 \seealso{

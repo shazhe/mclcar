@@ -113,6 +113,8 @@ The procedure implemented in this function locates the maximum region of
   the default is 10.}
 	}
 }
+\item{plotrsm,}{if true the approximated response surface with steepest or ridge analysis
+is plotted; defualt is TRUE}
 \item{trace.all,}{ if true, each iteration is stored and returned in the
   final output, default is TRUE}
 \item{verbose,}{ if true, an summary message is printed after each
@@ -175,7 +177,7 @@ Sha, Z. 2016 \emph{Estimating conditional auto-regression models}, DPhil
 Thesis, Oxford.
 }
 \author{
-Zhe Sha \email{sha@stats.ox.ac.uk}
+Zhe Sha \email{zhesha1006@gmail.com}
 }
 
 

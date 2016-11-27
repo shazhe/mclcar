@@ -10,7 +10,7 @@ rsmMCL <- function(data, psi0, family, exact0=NULL, control = list(), mc.control
                     psi.lim = list(r.lim = c(-0.2499, 0.2499), s.lim = c(0.1, 8)),
                     exacts = list(eval = TRUE, rho = c(-0.25, 0.25), sigma = c(0.5, 2), length = 100),
                     rsm.fit = list(n01 = 4, n02= 2, Rsq = 0.9, lof = 5e-2,
-                    st.diff = 50, mcl.diff = 10), trace.all = TRUE, verbose = TRUE)
+                    st.diff = 50, mcl.diff = 10), plotrsm = TRUE, trace.all = TRUE, verbose = TRUE)
         con[names(control)] <- control
 
         n.s <- n.s0 <- con$mc.samples[1]
@@ -22,6 +22,7 @@ rsmMCL <- function(data, psi0, family, exact0=NULL, control = list(), mc.control
         sigma.r0 <- con$exacts$sigma
         vec.length <- con$exacts$length
 		mc.var <- con$mc.var
+		plotrsm=con$plotrsm
         r.vec <- seq(rho.r0[1] + 0.01, rho.r0[2] - 0.01, length.out = vec.length)
         s.vec <- seq(sigma.r0[1], sigma.r0[2], length.out = vec.length)
         rs.mat <- expand.grid(r.vec, s.vec)
@@ -37,7 +38,7 @@ rsmMCL <- function(data, psi0, family, exact0=NULL, control = list(), mc.control
                     psi.lim = list(r.lim = c(-0.2499, 0.2499), s.lim = c(0.1, 8)),
                     exacts = list(eval = FALSE),
                     rsm.fit = list(n01 = 4, n02= 2, Rsq = 0.9, lof = 5e-2, st.diff = 50, mcl.diff = 10),
-                    trace.all = TRUE, verbose = TRUE)
+                    plotrsm = TRUE, trace.all = TRUE, verbose = TRUE)
         con[names(control)] <- control
 
         n.s <- n.s0 <- (mc.con$N.Zy - mc.con$burns)/mc.con$thin
@@ -45,6 +46,8 @@ rsmMCL <- function(data, psi0, family, exact0=NULL, control = list(), mc.control
         n.max <- con$mc.samples[2]
         rho.lim <- con$psi.lim$r.lim
         sigma.lim <- con$psi.lim$s.lim
+        
+        plotrsm=con$plotrsm
     }
 
     ## Initializing
@@ -162,13 +165,15 @@ rsmMCL <- function(data, psi0, family, exact0=NULL, control = list(), mc.control
                 if(flag.stationary){
                     st.point <- as.numeric(code2val(st.point.c,
                                                     codings(expts[[2]]))[c("rho", "sigma")])
+                    if(plotrsm){
                     plot.RSM(rsm.2, psi = psi, bounds = list(x1=c(-2,2), x2 = c(-2,2)),
                              fvbox = fvbox, DAbox = dabox, A.path = "canonical", distance = 0,
                              exact = exactsi, exact.vals = con$exacts$eval)
+                }
                     rs.new <- st.point
                 }else{
                     esa.res <- ESA.CAR(rsm.2, data = data, psi = psi, mc.data = sim.data, family,
-                                       plot = TRUE, ds.only = FALSE)
+                                       plot = plotrsm, ds.only = FALSE)
                     ds <- esa.res$ds
                     ESAs[[i]] <- esa.res
                     rs.newESA <- Psi.ESA(rsm.2, ds, con$psi.lim)
@@ -179,15 +184,17 @@ rsmMCL <- function(data, psi0, family, exact0=NULL, control = list(), mc.control
                     }else{
                         rs.new <- rs.newESA
                     }
+                    if(plotrsm){
                     plot.RSM(rsm.2, psi = psi, bounds = list(x1=c(-2,2), x2 = c(-2,2)),
                              fvbox = fvbox, DAbox = dabox, A.path = "steepest", distance = ds,
                              exact = exactsi, exact.vals = con$exacts$eval)
+                    }
                 }
                 Expt.Val2[[i]] <- expt.2
                 RSM.2[[i]] <- rsm.2
             }else{
                 esa.res <- ESA.CAR(rsm.1, data = data, psi = psi, mc.data = sim.data, family,
-                                   plot = TRUE, ds.only = FALSE)
+                                   plot = plotrsm, ds.only = FALSE)
                 ds <- esa.res$ds
                 ESAs[[i]] <- esa.res
                 rs.newESA <- Psi.ESA(rsm.1, ds, con$psi.lim)
@@ -198,9 +205,11 @@ rsmMCL <- function(data, psi0, family, exact0=NULL, control = list(), mc.control
                     }else{
                         rs.new <- rs.newESA
                     }
+                if(plotrsm){
                 plot.RSM(rsm.1, psi = psi, bounds = list(x1=c(-2,2), x2 = c(-2,2)),
                          fvbox = fvbox, DAbox = dabox, A.path = "steepest", distance = ds,
                          exact = exactsi, exact.vals = con$exacts$eval)
+            }
             }
             ## Update the psi and simulate new MC samples
             if(family == "gauss"){

@@ -11,8 +11,10 @@ export(CAR.simTorus, CAR.simWmat, CAR.simLM, CAR.simGLM, postZ, mcl.prep.dCAR,
        mcl.dCAR, mcl.profile.dCAR, 
        mple.dCAR, vmle.dCAR, Avar.lik.dCAR,
        mcl.glm, get.beta.glm, mcl.profile.glm, vmle.glm,
-       OptimMCL, summary.OptimMCL, rsmMCL, summary.rsmMCL, plot.rsmMCL)
+       OptimMCL, summary.OptimMCL, rsmMCL, summary.rsmMCL, plot.rsmMCL,
+       sim.HCAR, mcl.HCAR, OptimMCL.HCAR, summary.OptimMCL.HCAR, ranef.HCAR)
 
 S3method(summary, OptimMCL)
+S3method(summary, OptimMCL.HCAR)
 S3method(summary, rsmMCL)
 S3method(plot, rsmMCL)

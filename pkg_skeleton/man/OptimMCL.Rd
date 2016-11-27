@@ -109,7 +109,7 @@ Thesis, Oxford.
 }
 
 \author{
-Zhe Sha \email{sha@stats.ox.ac.uk}
+Zhe Sha \email{zhesha1006@gmail.com}
 }
 
 \seealso{

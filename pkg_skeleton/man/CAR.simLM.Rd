@@ -51,7 +51,7 @@ n.trial = 1)
 	}}
 }
 
-\author{Zhe Sha \email{sha@stats.ox.ac.uk}
+\author{Zhe Sha \email{zhesha1006@gmail.com}
 }
 
 \seealso{

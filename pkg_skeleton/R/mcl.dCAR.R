@@ -8,7 +8,7 @@ mcl.prep.dCAR <- function(psi, n.samples, data){
 }
 
 #### Monte Carlo log likelihood ratio
-mcl.dCAR <- function(pars, data, simdata, Evar = FALSE){ # Evar has to turn off when doing optimization!
+mcl.dCAR <- function(pars, data, simdata, rho.cons=c(-0.249, 0.249), Evar = FALSE){ # Evar has to turn off when doing optimization!
     data.vec <- data$data.vec
     y <- data.vec$y
     simY <- simdata$simY
@@ -29,8 +29,18 @@ mcl.dCAR <- function(pars, data, simdata, Evar = FALSE){ # Evar has to turn off 
     ##s2m <- s2s.expm * exp(s2.mean) # The normalising constant
     ls2m <- s2.mean + log(s2s.expm) # The log normalising constant
 
+    if(is.null(rho.cons)){
     mc.lr <- as.numeric(s1-ls2m) # The log likelihood ratio
     v.lr <- var(exp(s2s)/s2s.expm)/n.sim # The estimated variance of the mc.lr # (eq 2.2.4)
+    }else{
+      if(pars[1] > rho.cons[1] & pars[1] < rho.cons[2]){
+        mc.lr <- as.numeric(s1-ls2m) # The log likelihood ratio
+        v.lr <- var(exp(s2s)/s2s.expm)/n.sim # The estimated variance of the mc.lr # (eq 2.2.4)
+      }else{
+        mc.lr <- -1e8
+        v.lr <- 1e8
+      }
+    }
 
     if(Evar){
         return(c(mc.lr, v.lr))
@@ -40,7 +50,7 @@ mcl.dCAR <- function(pars, data, simdata, Evar = FALSE){ # Evar has to turn off 
 }
 
 #### Monte Carlo profile log likelihood ratio for rho
-mcl.profile.dCAR <- function(rho, data, simdata, Evar = FALSE){
+mcl.profile.dCAR <- function(rho, data, simdata, rho.cons = c(-0.249, 0.249), Evar = FALSE){
     data.vec <- data$data.vec
     y <- data.vec$y
     simY <- simdata$simY
@@ -63,11 +73,23 @@ mcl.profile.dCAR <- function(rho, data, simdata, Evar = FALSE){
     ls2m <- s2.mean + log(s2s.expm) # The log normalising constant
 
 
+    if(is.null(rho.cons)){
     mc.lr <- as.numeric(s1-ls2m) # The log likelihood ratio
-
-    if(Evar){
+    v.lr <- var(exp(s2s)/s2s.expm)/n.sim # The estimated variance of the mc.lr
+    }else{
+      if(rho> rho.cons[1] & rho < rho.cons[2]){
+        mc.lr <- as.numeric(s1-ls2m) # The log likelihood ratio
         v.lr <- var(exp(s2s)/s2s.expm)/n.sim # The estimated variance of the mc.lr
-        return(c(mc.lr, v.lr))
+      }
+      else{
+        mc.lr <- -1e8
+        v.lr <- 1e8
+      }
+    }
+
+    
+    if(Evar){
+         return(c(mc.lr, v.lr))
     }else{
         return(mc.lr)
     }
@@ -77,7 +99,7 @@ mcl.profile.dCAR <- function(rho, data, simdata, Evar = FALSE){
 vmle.dCAR <- function(MLE, data, simdata){
     par <- MLE$par
     ##n.sim <- ncol(simdata$simY)
-    A <- mc.gradlik.dCAR(par, data, simdata, Evar = TRUE)$grad.var
+    A <- mc.gradlik.dCAR(par, data, simdata, Evar = 2)$grad.var
     B <- MLE$hessian
     Binv <- solve(B)
     Binv %*% A %*% Binv # The matrix are usually small so just compute directly
@@ -188,7 +210,7 @@ D.log.unorm <- function(pars, data, y){ # functional1 of the sample
 }
 
 #### Gradient of the MC log likelihod
-mc.gradlik.dCAR <- function(pars, data, simdata, Evar = FALSE){ # Evar has to turn off when doing optimization!
+mc.gradlik.dCAR <- function(pars, data, simdata, Evar = 0){ # Evar has to turn off when doing optimization!
     data.vec <- data$data.vec
     y <- data.vec$y
     simY <- simdata$simY
@@ -248,12 +270,16 @@ mc.gradlik.dCAR <- function(pars, data, simdata, Evar = FALSE){ # Evar has to tu
 
     grad.all <- g10 - rowMeans(g20w)
 
-    if(Evar){
+    if(Evar == 1){
         v.grad <- var(t(g20w))/n.sim
         return(list(grad = grad.all, grad.var = v.grad))
-    }else{
-        return(grad.all)
-    }
+    }else if(Evar == 2){
+      Ws <- exp(s2s)/s2s.expm
+      grad.psi <- sapply(Ws, function(x) x*g10)
+      v.grad <- var(t(g20w) - t(grad.psi))/n.sim
+      return(list(grad = grad.all, grad.var = v.grad))
+    }else{ return(grad.all)
+      }
 }
 
 

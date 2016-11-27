@@ -4,7 +4,7 @@
 #### Exact likelihood evaluations for direct CAR models
 #####################################################################################
 #### exact log-likelihood function
-loglik.dCAR <- function(pars,data){
+loglik.dCAR <- function(pars,data, rho.cons = c(-0.249, 0.249)){
     data.vec <-data$data.vec
     y <- data.vec$y
     n <- length(y)
@@ -30,7 +30,15 @@ loglik.dCAR <- function(pars,data){
 
     ll <- -n/2*(log(2*pi)+log(sigma)) + 1/2*sum(log(1 - rho*lambda)) -
           t(res) %*%((I - rho*W) %*% res)/(2 * sigma)
+    if(is.null(rho.cons)){
     as.numeric(ll)
+    }else{
+      if(rho > rho.cons[1] & rho < rho.cons[2] ){
+        as.numeric(ll)
+      }else{
+        -1e8
+      }
+    }
 }
 
 #### The exact profile likelihood for rho
@@ -69,17 +77,12 @@ sigmabeta <- function(rho, data){
     I <- diag(1,n)
     Q1 <- I - rho*W
 
-    if(ncol(data.vec) > 1){
         X <- model.matrix(y~.,data=data.vec)
         beta <- solve(t(X) %*% Q1 %*% X) %*% t(X) %*% Q1 %*% y
         Xb <- X %*% beta
         res <- y - Xb
         sigma <- t(res) %*% Q1 %*% res/n
         return(c(sigma=as.numeric(sigma), beta=as.numeric(beta)))
-    }else{
-        sigma <- t(y) %*% Q1 %*% y/n
-         return(as.numeric(sigma))
-    }
 }
 
 #### Given rho get the mle of beta only
@@ -113,7 +116,7 @@ mple.dCAR <- function(data, tol = 1e-6, rho0 = 0){
     rr1 <- 1/min(lambda)
     rr2 <- 1/max(lambda)
 
-    if(ncol(data.vec)>1){
+   
         X <-  model.matrix(y~.,data=data.vec)
         while(diffrho >= tol){
             Q1 <- I-rho0*W
@@ -129,12 +132,7 @@ mple.dCAR <- function(data, tol = 1e-6, rho0 = 0){
             rho0 <- rho
         }
             return(c(rho0, sigma0, beta0))
-    }else{
-        rho0 <- as.numeric(t(y) %*% (W %*% y)/(t(y) %*% (W %*% (W %*% y))))
-        rho0 <- ifelse(rho0 < rr1, rr1*0.99, ifelse(rho0 > rr2, rr2*0.99, rho0))
-        sigma0 <- as.numeric(t(y) %*% ((I - rho0*W) %*% y)/n)
-        return(c(rho0, sigma0))
-    }
+   
 }
 
 

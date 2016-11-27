@@ -87,7 +87,7 @@ Sha, Z. 2016 \emph{Estimating conditional auto-regression models}, DPhil
 Thesis, Oxford.
 }
 \author{
-Zhe Sha \email{sha@stats.ox.ac.uk}
+Zhe Sha \email{zhesha1006@gmail.com}
 }
 
 

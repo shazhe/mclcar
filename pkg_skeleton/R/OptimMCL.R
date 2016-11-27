@@ -33,8 +33,10 @@ OptimMCL.lm <- function(data, psi0, control = list()){
         tt <- system.time({
                            mcdata <- mcl.prep.dCAR(psi, n.s, data)
                            opt <- optim(psi[1], mcl.profile.dCAR, data = data, simdata = mcdata,
+                                        rho.cons = c(rho.range[1], rho.range[2]),
                                         method = "L-BFGS-B",
-                                        lower = rho.range[1], upper = rho.range[2],
+                                        lower = rho.range[1],
+                                        upper = rho.range[2],
                                         hessian = TRUE, control = list(fnscale = -1))
                            mc.mle <- opt$par
                            mc.Hess <- opt$hessian
@@ -54,7 +56,7 @@ OptimMCL.lm <- function(data, psi0, control = list()){
                                    mc.sd <-NA
                                }
                            }else{
-                               psi.new <- psi.b*(psi + c(mc.mle, sigmabeta.new))
+                               psi.new <- psi.b*psi + (1-psi.b)*c(mc.mle, sigmabeta.new)
                                mc.sd <- NA
                            }
                        })

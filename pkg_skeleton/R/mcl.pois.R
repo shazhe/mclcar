@@ -71,8 +71,6 @@ mcl.pois<- function(pars, mcdata, Evar = FALSE){
     if (Evar){
         ## Assuming the samples are independent after thinning
         ## So a very rough estimate using the sample variance
-        var(exp(r.Zy))/mean(exp(r.Zy))^2/n.samples
-        var(exp(r.Zy.scale))/(r.exp.mean^2)/n.samples
         v.lr <- var(exp(r.Zy.scale - log(r.exp.mean)))/n.samples
 
         return(c(mc.lr, v.lr))

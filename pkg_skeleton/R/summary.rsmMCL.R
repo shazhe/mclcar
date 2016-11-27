@@ -16,9 +16,8 @@ summary.rsmMCL.lm <- function(object, trace.all = TRUE, mc.covar=TRUE){
 
     if(mc.covar){
         B <- Hessian.dCAR(rsm.mle, object$data) # Hessian at the mc.mle
-        invB <- solve(B)
-        A <- MCMLE.var(rsm.mle, data = data, simdata = mc.data)
-        mc.var <- invB %*% A %*% invB/nrow(data$data.vec)
+        res.mle <- list(par = rsm.mle, hessian = B)
+        mc.var <- vmle.dCAR(res.mle, data = data, simdata = mc.data)
         ans <- list(MC.mle = rsm.mle, N.iter = niter, total.time = total.time,
                     convergence = convergence, hessian = B, mc.covar = mc.var,
                     mc.samples = mc.samples)

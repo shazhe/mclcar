@@ -66,7 +66,7 @@ Exp.dCAR <- function(exp.design, data, psi, n0, mc.data){
     if(is.null(mc.data)){
          stop("Please provide the Monte Carlo samples by specifying mc.data!")
     }
-    n.samples <- nrow(mc.data$simY)
+    n.samples <- ncol(mc.data$simY)
     nb.sim <- floor(n.samples/n0)
 
     mc.lr <- mc.var <- rep(0, 4+n0)
@@ -83,12 +83,12 @@ Exp.dCAR <- function(exp.design, data, psi, n0, mc.data){
             mcdatai <- list(simY = mc.data$simY[,indx], t10 = mc.data$t10,
                             t20 = mc.data$t20[indx])
 
-            mc.res <- mcl.dCAR(pars = pars.i, data=data, simdata=mcdatai, Evar=TRUE)
+            mc.res <- mcl.dCAR(pars = pars.i, data=data, simdata=mcdatai, rho.cons= NULL, Evar=TRUE)
             exp.design[k,]$mc.lr <- mc.res[1]
             exp.design[k,]$mc.var <- mc.res[2]
         }
         else{
-            mc.res <- mcl.dCAR(pars = pars.i, data=data, simdata=mc.data, Evar=TRUE)
+            mc.res <- mcl.dCAR(pars = pars.i, data=data, simdata=mc.data, rho.cons=NULL, Evar=TRUE)
             exp.design[k,]$mc.lr <- mc.res[1]
             exp.design[k,]$mc.var <- mc.res[2]
         }
@@ -107,7 +107,7 @@ ExpPath.dCAR <- function(exp.design, data, psi, mc.data){
     mc.lr <- mc.var <- rep(0, kk)
     exp.design$mc.lr <- mc.lr
     exp.design$mc.var <- mc.var
-    mc.res <- apply(exp.design[, c("rho", "sigma")], 1, function(x) mcl.dCAR(c(x, psi[-c(1,2)]),
+    mc.res <- apply(exp.design[, c("rho", "sigma")], 1, function(x) mcl.dCAR(c(x, psi[-c(1,2)], rho.cons = NULL),
                     data=data, simdata=mc.data, Evar=TRUE))
     exp.design$mc.lr <- mc.res[1,]
     exp.design$mc.var <- mc.res[2,]
@@ -131,11 +131,11 @@ ESA.dCAR <- function(exp.design, data, psi, mc.data, rho.r = c(-0.25, 0.25),
     ds.val <- ifelse(opt.val > 0, min(max.step, round(opt.val, digits = 1)), max.step)
     ds.var <- min(max.step, floor(opt.var))
     ds <- ifelse(ds.var < 1, ds.val, min(ds.val, ds.var))
+    pred.dist <-  seq(0, max.step, by = 0.1)
+    pred.val <-  predict(sa.val, newdata = data.frame(dist =pred.dist))
+    pred.var <-  predict(sa.var, newdata = data.frame(dist =pred.dist))
 
     if(plot){
-        pred.dist <-  seq(0, max.step, by = 0.1)
-        pred.val <-  predict(sa.val, newdata = data.frame(dist =pred.dist))
-        pred.var <-  predict(sa.var, newdata = data.frame(dist =pred.dist))
         par(mfrow = c(1,2))
         plot(mc.lr ~ dist, data = expt.steep)
         lines(pred.dist, pred.val)
@@ -227,11 +227,11 @@ ESA.CAR.glm <- function(exp.design, data, family, psi, mc.data, rho.r = c(-0.25,
     ds.val <- ifelse(opt.val > 0, min(max.step, round(opt.val, digits = 1)), max.step)
     ds.var <- min(max.step, floor(opt.var))
     ds <- ifelse(ds.var < 1, ds.val, min(ds.val, ds.var))
+    pred.dist <-  seq(0, max.step, by = 0.1)
+    pred.val <-  predict(sa.val, newdata = data.frame(dist =pred.dist))
+    pred.var <-  predict(sa.var, newdata = data.frame(dist =pred.dist))
 
     if(plot){
-        pred.dist <-  seq(0, max.step, by = 0.1)
-        pred.val <-  predict(sa.val, newdata = data.frame(dist =pred.dist))
-        pred.var <-  predict(sa.var, newdata = data.frame(dist =pred.dist))
         par(mfrow = c(1,2))
         plot(mc.lr ~ dist, data = expt.steep)
         lines(pred.dist, pred.val)
