@@ -30,8 +30,8 @@ Monte Carlo likelihood calculation for direct CAR models.
 \usage{
 mcl.prep.dCAR(psi, n.samples, data)
 
-mcl.dCAR(pars, data, simdata, Evar = FALSE)
-mcl.profile.dCAR(rho, data, simdata, Evar = FALSE)
+mcl.dCAR(pars, data, simdata, rho.cons = c(-0.249, 0.249), Evar = FALSE)
+mcl.profile.dCAR(rho, data, simdata, rho.cons = c(-0.249, 0.249), Evar = FALSE)
 
 vmle.dCAR(MLE, data, simdata)
 Avar.lik.dCAR(pars, psi, data, n.samples, Log = TRUE)
@@ -48,6 +48,7 @@ Avar.lik.dCAR(pars, psi, data, n.samples, Log = TRUE)
 	\code{\link{loglik.dCAR}}}
   \item{simdata}{a list object in the same format as the output of
 	\code{mcl.prep.dCAR}}
+  \item{rho.cons}{rho domain interval} % FIXME
   \item{Evar}{if TRUE return the estimated variance of the
 	Monte Carlo likelihood}
   \item{MLE}{a list object with

@@ -2,8 +2,8 @@ Package: mclcar
 Type: Package
 Title: Estimating Conditional Auto-Regressive (CAR) Models using Monte
         Carlo Likelihood Methods
-Version: 0.1.7
-Date: 2016-11-27
+Version: 0.1-8
+Date: 2016-11-28
 Authors@R: c(person("Zhe", "Sha", role = c("aut", "cre"), email =
         "zhesha1006@gmail.com"))
 Author: Zhe Sha [aut, cre]

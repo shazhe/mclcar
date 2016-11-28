@@ -1,5 +1,5 @@
 #### summary function for OptimMCL
-summary.OptimMCL.HCAR <- function(object, trace.all = TRUE, mc.covar=TRUE){
+summary.OptimMCL.HCAR <- function(object, trace.all = TRUE, mc.covar=TRUE, ...){
     niter <- object$N.iter
     if(trace.all){
         mcmle<- object$MC.MLEs[[niter]]
