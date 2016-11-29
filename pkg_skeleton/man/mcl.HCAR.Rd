@@ -6,7 +6,7 @@
 \description{Evaluate the Monte Carlo likelihood of a hierarchical conditional-autoregressive model at a given parameter value and importance sampler value.}
 
 \usage{
-mcl.HCAR <- function(pars, mcdata, data, Evar = FALSE)
+mcl.HCAR(pars, mcdata, data, Evar = FALSE)
 }
 
 \arguments{
@@ -27,9 +27,9 @@ mcl.HCAR <- function(pars, mcdata, data, Evar = FALSE)
 \seealso{
 \code{\link{sim.HCAR}}, \code{\link{OptimMCL.HCAR}}, \code{\link{summary.OptimMCL.HCAR}}
 }
-\examples{
+%\examples{
 
-}
+%}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{CAR, HCAR}

@@ -10,9 +10,9 @@
 }
 \usage{
 \method{summary}{OptimMCL.HCAR}(object, trace.all = TRUE, mc.covar =
-  TRUE, \dots)
+  TRUE, ...)
   
-ranef.HCAR <-function(pars, data)
+ranef.HCAR(pars, data)
 }
 
 \arguments{
@@ -21,10 +21,10 @@ ranef.HCAR <-function(pars, data)
   by \code{\link{OptimMCL.HCAR}} contains results from all iterations of not}
   \item{mc.covar}{ if TRUE, the estimated covariance matrix of the
 	MC-MLE is returned}
-  \item{\dots}{arguments passed to or from other methods.}
+  \item{...}{arguments passed to or from other methods.}
   
-  \item{pars}{the paramter values for calculating the empirical Bayesian estimates of the randome effects.}
-  \item{pars}{a list or enivironment of data same as described in \code{\link{sim.HCAR}}}
+  \item{pars}{the paramter values for calculating the empirical Bayesian estimates of the random effects; a list or enivironment of data for example same as described in \code{\link{sim.HCAR}}} % FIXME
+  \item{data}{A list or an environment contains the variables same as described in \code{\link{sim.HCAR}}.} % FIXME
 }
 
 \value{

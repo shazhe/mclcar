@@ -6,7 +6,7 @@
 \description{Simulate samples from a hierarchical conditional-autoregressive model.}
 
 \usage{
-sim.HCAR <- function(psi, data, n.samples)
+sim.HCAR(psi, data, n.samples)
 }
 
 \arguments{
@@ -48,9 +48,9 @@ Zhe Sha \email{zhesha1006@gmail.com}
 \seealso{
 \code{\link{mcl.HCAR}}, \code{\link{OptimMCL.HCAR}}, \code{\link{summary.OptimMCL.HCAR}}
 }
-\examples{
+%\examples{
 
-}
+%}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{CAR, HCAR}
