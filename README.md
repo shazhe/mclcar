@@ -29,7 +29,7 @@ Stable version can be installed directly from CRAN by calling ```install.package
 2. Estimate the CAR models using the Monte Carlo likelihood methods with either the iterative procedure or the rsm procedure.
 3. Plot the likelihood surface evolution when using the rsm procedure.
 4. The CAR models can be fiited by the package currently include the followings:
-..* a direct CAR model -- linear model with CAR errors, on a torus or a map with given neighbourhood matrix,
-..* a Binomial/Poisson GLM with latent CAR variables,
-..* a hierachical CAR models with individual and district level CAR correlations.
+   * a direct CAR model -- linear model with CAR errors, on a torus or a map with given neighbourhood matrix,
+   * a Binomial/Poisson GLM with latent CAR variables,
+   * a hierachical CAR models with individual and district level CAR correlations.
 
