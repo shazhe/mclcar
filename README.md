@@ -15,7 +15,7 @@ This github repo contains latest update to the package and also maintains the pr
 The latest github version can be installed by 
 ```R
 library(devtools)
-install_github("shazhe/mclcar/tree/master/mclcar_0.1-8", build_vignettes=F, dependencies=T)
+install_github("shazhe/mclcar/mclcar_0.1-8", build_vignettes=F, dependencies=T)
 ```
 
 ### 2 From package .tar.gz
