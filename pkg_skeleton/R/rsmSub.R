@@ -310,8 +310,7 @@ plot.RSM <- function(rsm.fitted, psi, bounds, fvbox = NULL, DAbox = NULL,
 
     if(exact.vals){
         if(is.null(exact)){
-            warning("Exact values can not be NULL.")
-            break
+            stop("Exact values can not be NULL.")
         }
         rhos <- exact$r.vec
         sigmas <- exact$s.vec

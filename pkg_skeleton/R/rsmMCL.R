@@ -85,13 +85,11 @@ rsmMCL <- function(data, psi0, family, exact0=NULL, control = list(), mc.control
     while (i <= n.iter & (!flag.stationary | !flag.converge) & !sDA){
 
         if(n.s > n.max){
-            warning("Iteration terminated: Evaluations can take too long with the maximum Monte Carlo sample size.")
-            break
+            stop("Iteration terminated: Evaluations can take too long with the maximum Monte Carlo sample size.")
         }
 
         if(t.total/3600 > time.max){
-            warning("Iteration terminated: Maximum evaluation time reached.")
-            break
+            stop("Iteration terminated: Maximum evaluation time reached.")
         }
 
         if(con$exacts$eval){
