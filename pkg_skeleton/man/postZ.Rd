@@ -86,6 +86,7 @@ mydata2 <- CAR.simGLM(method = "binom", n = c(n.torus, n.torus), pars = pars.tru
                       Xs = as.matrix(X0), n.trial = nb)
 
 ## use a glm to find initial values for the importance sampler
+library(spatialreg)
 library(spdep)
 data.glm <- data.frame(y=mydata2$y, mydata2$covX[,-1])
 fit.glm <- glm(cbind(y, nb-mydata2$y) ~ .,data = data.glm, family=binomial)
