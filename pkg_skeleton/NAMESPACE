@@ -1,5 +1,11 @@
 #exportPattern("^[[:alpha:]]+")
-import(spam, rsm, fields, maxLik, nleqslv, spdep)
+import(spam, rsm, fields, maxLik, nleqslv)
+if (packageVersion("spdep") < 1.2) {
+  import(spdep, except=c(spautolm))
+} else {
+  import(spdep)
+}
+importFrom(spatialreg, spautolm)
 importFrom("grDevices", "dev.new", "terrain.colors")
 importFrom("graphics", "arrows", "contour", "lines", "par", "plot",
              "points", "polygon", "title")
