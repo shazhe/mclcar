@@ -8,14 +8,14 @@ The package is available on [CRAN](https://cran.r-project.org/) at https://CRAN.
 This github repo contains latest update to the package and also maintains the previous version. 
 
 ## Installation
-* Latest github version: 0.1.8
-* Latest CRAN version: 0.1.8
+* Latest github version: 0.2.0
+* Latest CRAN version: 0.2.0
 
 ### 1 From github
 The latest github version can be installed by 
 ```R
 library(devtools)
-install_github("shazhe/mclcar/mclcar_0.1-8", build_vignettes=F, dependencies=T)
+install_github("shazhe/mclcar/mclcar_0.2-0", build_vignettes=F, dependencies=T)
 ```
 
 ### 2 From package .tar.gz
