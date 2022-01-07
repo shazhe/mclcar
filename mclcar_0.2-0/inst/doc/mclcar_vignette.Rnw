@@ -1,0 +1,323 @@
+\documentclass[nojss]{jss}
+
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{Introduction to mclcar}
+%\VignettePackage{mclcar}
+%\VignetteKeywords{conditiona auto-regression models, Monte Carlo Likelihood, likelihood approximation, likelihood based inference, response surface design}
+
+\newcommand{\ud}{\,\mathrm{d}}
+\usepackage{mathtools}
+\usepackage{amsthm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\author{Zhe Sha\\University of Oxford}
+\title{\pkg{mclcar}: an R Package for Maximum Monte Carlo Likelihood Estimation of Conditional Auto-regression Models}
+
+%% for pretty printing and a nice hypersummary also set:
+\Plainauthor{Zhe Sha} %% comma-separated
+\Plaintitle{mclcar: an R Package for Maximum Monte Carlo Likelihood Estimation of Conditional Auto-regression Models} %% without formatting
+\Shorttitle{\pkg{mclcar}: MC-MLE of CAR Models} %% a short title (if necessary)
+
+%% an abstract and keywords
+\Abstract{
+  We briefly describe the Monte Carlo likelihood method in estimating CAR models
+  and the implementation in the pkg{mclcar}. Then we demonstrate the usage of
+  the package through examples of Gaussian, Binomial and Poisson data.
+}
+\Keywords{Monte Carlo likelihood, CAR models, spatial statistics, response surface design, \pkg{mclcar}, \proglang{R}}
+\Plainkeywords{Monte Carlo likelihood, CAR models, spatial statistics, response surface design} %% without formatting
+%% at least one keyword must be supplied
+
+
+%% The address of (at least) one author should be given
+%% in the following format:
+\Address{
+  Zhe Sha\\
+  Department of Statistics\\
+  University of Oxford\\
+  24-29 St Giles', Oxford\\
+  OX1 3LB, UK \\
+  E-mail: \email{zhesha1006@gmail.com}\\
+}
+
+%% end of declarations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+<<echo=FALSE>>=
+knitr::opts_chunk$set(prompt = TRUE, comment=NA)
+@
+
+%% include your article here, just as usual
+%% Note that you should use the \pkg{}, \proglang{} and \code{} commands.
+
+\section[Introduction]{Introduction}
+Conditional auto-regression (CAR) models are frequently used with spatial data.
+However, the likelihood of such a model is expensive to compute even for a
+moderately sized data set of around 1000 sites. For models involving latent
+variables, the likelihood is not usually available in closed form.
+\subsection[CAR models]{CAR models}
+The CAR models are defined through full conditionals of observations $y_i$ from each spatial unit $i$
+\begin{align}\label{eq:CARc}
+  y_i|y_{j \sim i} \sim \mathcal{N}(X_i\beta + \sum_{j}\! \rho \,w_{ij}(y_j -
+  X_j\beta), \, \sigma^2)
+\end{align}
+where $X_j$ is the $j^{th}$ row of the design matrix $X$, $\beta$ is a vector of the linear coefficients, $\rho$ is the spatial coefficient showing the global strength of the spatial effect and $\{w_{ij}\}$ are the elements of the spatial weight matrix $W$ reflecting the local spatial effect. The joint distribution of
+$Y$ is the multivariate Gaussian distribution:
+\begin{align} \label{eq:CARj}
+Y \; \sim \; \mathcal{N}(X\beta, \Sigma)
+\end{align}
+where $\Sigma = \sigma^2(I-\rho W)^{-1}$ is the variance-covariance matrix and $\rho \in (1/\lambda_1, \, 1/\lambda_N)$ where $\lambda_1 <
+\lambda_2 < \cdots < \lambda_N$ are the ordered eigenvalues of $W$.
+
+Non-Gaussian observations can usually model the generalised linear models with a CAR latent variable:
+\begin{align} \label{eq:latentCAR}
+\left \{\begin{array}{ll}
+\mathbf{y} \sim \mathbf{\pi}(\mu) \\
+g(\mu) = \eta \\
+\eta = X\beta + Z, \;\; Z \sim \mathcal{N}(0, \Sigma)
+\end{array} \right.
+\end{align}
+Where $\mathbf{\pi}$ is the distribution of $y$ and $g(\cdot)$ is some link function.
+
+Maximum likelihood of the above models can be computationally expensive, especially for large $N$, due to the determinant of $\Sigma$ in the likelihood of \eqref{eq:CARj} and the integral for the latent variable $Z$ for \eqref{eq:latentCAR}.
+\subsection[overview]{Overview}
+In this package, we implement the Monte Carlo approximation to the likelihood
+(extending the approach of \cite{Geyer1992}), and develop two strategies for
+maximising this. One strategy is to limit the step size by defining an
+experimental region using a Monte Carlo approximation to the variance of the
+estimates. The other is to use response surface methodology (RSM). The iterative
+procedures are fully automatic, with user-specified options to control the
+simulation and convergence criteria.
+
+In the following we first briefly describe the Monte Carlo likelihood and the implemented
+optimization procedure; then we demonstrate some major features of the package
+\pkg{mclcar} through examples of Gaussian, Binomial and Poisson data.
+
+\section[MC-likelihood]{The Monte Carlo likelihood estimation}
+The Monte Carlo likelihood is an importance sampling approximation to the
+log-likelihood ratio $\log L(\theta; y) / L(\psi;y)$, where $\theta, \psi \in
+\Theta$ and $\psi$ is the parameter value used in the importance
+distribution. The likelihood is usually in the following forms
+\begin{align}\label{eq:direct}
+&L(\theta; y) = f_{\theta}(y) = \frac{1}{c(\theta)}h_{\theta}(y) \\ \label{eq:latent}
+&L(\theta; y) = \int f_{\theta}(Y=y, Z) \ud Z
+\end{align}
+where in \eqref{eq:direct} the likelihood is the product of a normalising constant $C(\theta)$ and the un-normalised density $h_{\theta}(y)$
+and in \eqref{eq:latent}, $f_{\theta}(Y,Z)$ is the joint density of the observed data $Y$ and the unobserved or latent variable $Z$. The corresponding Monte Carlo likelihoods are
+\begin{align}\label{eq:mcl.direct}
+&\hat{\ell}_{\psi}^{s_1}(\theta) = \log \frac{h_{\theta}(y)}{h_{\psi}(y)} - \log\frac{1}{s_1}\sum_{i}^{s_1} \frac{h_{\theta}(Y_i)}{h_{\psi}(Y_i)} \\ \label{eq:mcl.latent}
+&\hat{\ell}_{\psi}^{s_2}(\theta) = \log \frac{1}{s_2} \sum_i^{s_2} \frac{f_{\theta}(y,
+    {Z^*}^{(i)})}{f_{\psi}(y, {Z^*}^{(i)})}
+\end{align}
+where $Y_i$ are $s_1$ samples from $f_{\psi}(y)$ and $Z^{*(i)}$ are $s_2$ samples from $f_{\psi}(Z|Y=y)$.
+
+Given a chosen $\psi$, the log-likelihood ratio differs from the log-likelihood by a constant and thus can be maximized to find the MLE. The
+Monte Carlo MLE (MC-MLE) is defined to be
+\begin{align}
+\hat{\theta}_{\psi}^{s} = \underset{\theta \in \Theta}{\operatorname{arg \, max}} \; \hat{\ell}_{\psi}^{s}(\theta)
+\end{align}
+
+Ideally, we would like to find the MC-MLE by directly maximising the Monte Carlo likelihood; however this might become infeasible as the Monte Carlo error increases as the distance between $\psi$ and $\theta$ becomes large. When an reasonable initial value of $\psi$ is available, iterations can be done to improve the accuracy by using the MC-MLE obtained from the current step as the $\psi$ in the next step until the different between the two reaches some tolerance. When there is no good enough initial value, we put some constraints on the updating step in each iteration based on the sample variance estimates for the Monte Carlo errors.
+
+The constrained iterative procedure is implemented by functions \texttt{OptimMCL} and \texttt{rsmMCL}: the former directly optimise the Monte Carlo likelihood and update in each iteration such that the error of the Monte Carlo likelihood at the new $\psi$ does not exceed some tolerance; while the later use the response surface methodology (RSM, \cite{box2007response}) in maximisation combined with the constraints in the \emph{steepest ascent analysis} for updating the system. A quick introduction of implementing the RSM in R can be found in \cite{RSM_R}.
+
+
+\section[examples]{Examples}
+Install and load the package.
+<<>>=
+library(mclcar)
+@
+
+\subsection{Simulate Data}
+The package provides several functions to simulate samples from a given direct CAR model in \eqref{eq:CARj} or a GLM model with CAR latent variables as in \eqref{eq:latentCAR}. For example, we can generate CAR errors on a $10 \times 10$ torus with spatial coefficient $\rho = 0.2$ and precision $\tau^2 = 1/sigma^2 = 2/3$ by the following
+
+<<>>=
+set.seed(33)
+n.torus <- 10
+rho <- 0.2
+sigma <- 1
+prec <- 1/sigma
+beta <- c(1, 1)
+XX <- cbind(rep(1, n.torus^2), sample(log(1:n.torus^2)/5))
+mydata1 <- CAR.simTorus(n1 = n.torus, n2 = n.torus, rho = rho, prec = prec)
+@
+
+The simulated data is a vector of length $100$. When the spatial weight matrix $W$ is supplied, the CAR errors can be generated by
+
+<<>>=
+Wmat <- mydata1$W
+mydata2 <- CAR.simWmat(rho = rho, prec = prec, W = Wmat)
+@
+
+Then with the above we can generate observations from a linear model with CAR error
+
+<<>>=
+y <- XX %*% beta + mydata1$X
+mydata1$data.vec <- data.frame(y=y, XX[,-1])
+mydata3 <- CAR.simLM(pars = c(0.1, 1, 2, 0.5), data = mydata1)
+@
+
+For the direct CAR models we can do exact evaluation of the likelihood for an
+object of the same struture as \texttt{mydata1}
+
+<<>>=
+str(mydata1)
+#### evaluate the log-likelihood
+## without supplying lamdab -- the eigenvalues of W
+loglik.dCAR(pars = c(0.1, 1, 0.9, 2.1), data = mydata1)
+
+## with lamda
+lambda <- eigen(mydata1$W, symmetric = TRUE, only.values=TRUE)$values
+mydata1$lambda <- lambda
+loglik.dCAR(pars = c(0.1, 1, 0.9, 2.1), data = mydata1)
+
+## evaluate the profile log-likelihood of rho
+ploglik.dCAR(rho = 0.1, data = mydata1)
+
+## given rho = 0.1, find the least square estimates for beta and sigma
+get.beta.lm(rho = 0.1, data = mydata1)
+sigmabeta(rho = 0.1, data = mydata1)
+
+## find the maximum pseudo-likelihood estimates
+(psi1 <- mple.dCAR(data = mydata1))
+@
+
+We can also generate Binomial or Poisson observations with CAR latent variables
+
+<<>>=
+mydata4 <- CAR.simGLM(method="binom", n=c(10,10),
+                      pars = c(rho, sigma, beta),
+                      Xs=XX, n.trial = 5)
+mydata5 <- CAR.simGLM(method="poisson", n=c(10, 10),
+                      pars = c(rho, sigma, beta), Xs=XX)
+str(mydata5)
+@
+The result is a list containing  all the information of the GLM
+model used in the simulation.
+
+\subsection{Prepare the Monte Carlo samples}
+Before evaluating the Monte carlo likelihood, we need to generate Monte Carlo
+samples from the importance sampling distribution. For direct CAR models, we
+only need to specify the number of Monte Carlo samples by \texttt{n.samples} and
+the value of \texttt{psi} to be used in the importance sampler.
+<<>>=
+#### Prepare the Monte Carlo samples for the direct CAR models
+mcdata1 <- mcl.prep.dCAR(psi = psi1, n.samples = 500, data = mydata1)
+@
+
+Monte Carlo samples for the GLM with latent CAR models need to be simuated by
+using MCMC algorithms and it can be done by \texttt{postZ}. Two major MCMC
+algorithms, the radom walk Metropolis Hastings (\texttt{"rwmh"}) and Metropolis
+Adjusted Langevin alogrithm (\texttt{"mala"}), are implemented in the function
+and the parameters in the algorithm can be controlled by
+\texttt{mcmc.control}. More details can be found in the package documentaion.
+<<eval=FALSE>>=
+Z.S0 <- CAR.simWmat(psi1[1], 1/psi1[2], mydata4$W) # initial value
+mc.cons <- list(method = "mala") # control the MCMC algorithm
+simZy <- postZ(data = mydata4, Z.start = Z.S0, psi = psi1,
+               family = "binom", mcmc.control = mc.cons,
+               plots = TRUE) # diagnostic plots for the MCMC
+
+@
+
+Similar to the direct CAR models, the function \texttt{mcl.prep.glm} provide as
+an wrapper for \texttt{postZ} for preparing the Monte Carlo samples.
+<<>>=
+mc.BinData <- mcl.prep.glm(data = mydata4, family = "binom", psi = psi1,
+                           pilot.plot = FALSE, plot.diag = TRUE)
+@
+\subsection{Evaluate the Monte Carlo likelihood}
+Now with the prepared Monte Carlo samples in the objects \texttt{mcdata1},
+\texttt{mc.BinData} and \texttt{mc.PoiData}, we can evaluate the Monte Carlo
+likelhoods and get variance estimations.
+
+<<>>=
+## the Monte Carlo likelihoods at the true value
+pars.t <- c(rho, sigma, beta)
+mcl.dCAR(pars.t, data = mydata1, simdata = mcdata1, Evar = TRUE)
+mcl.glm(pars.t, family = "binom",  mcdata = mc.BinData, Evar = FALSE)
+## When Evar = TRUE the function returns the Monte Carlo likelihood,
+## an variance estimate of the Monte Carlo likelihood
+@
+
+\subsection{The iterative maximization procedure}
+The Monte Carlo likelihood can be directly maximised to find the Monte Carlo MLE
+in an iterative procedure that uses the Monte Carlo variance estimate as an
+constraints on step size of the update in each iteration. The function
+\texttt{OptimMCL} implement such procedure and users can define the starting
+value of the $\psi$ in the importance sampler and control the parameters of the
+MCMC algorithm as before by setting \texttt{mc.control}.
+
+The function has an aditional option \texttt{control} that can be defined by users to control the
+number of iterations and etc. in the iterative procedure.
+
+<<>>=
+iter.mcmle <- OptimMCL(data = mydata1, psi0 = psi1, family = "gauss",
+                       control = list(mc.var = FALSE, verbose = FALSE))
+summary(iter.mcmle, family = "gauss", mc.covar=FALSE)
+
+## similar syntax for Binomial data but take longer time to run
+## iter.mcmle.b <- OptimMCL(data = mydata4, psi0 = psi1, family = "binom",
+##                       control = list(mc.var = TRUE, verbose = TRUE))
+@
+By default \texttt{verbose} = TRUE in the list of \texttt{control} and the
+function print out a few lines of summary information of the current iteration.
+
+The summary of \texttt{OptimMCL} prints the Monte Carlo MLE found in the final
+iteration, the corresponding Hessian matrix and a few other informations about
+the iteration.
+
+\subsection{The RSM optimisation procedure}
+We can also use the response surfance methodology to find the Monte Carlo MLE
+and approximate the likelihood surface around the MLE by \texttt{rsmMCL}. The
+function has usage as \texttt{OptimMCL} and users can specify the size of the
+design region through \texttt{K} and number of design points \texttt{n01, n02}
+in the \texttt{control} list for the response surface design.
+
+For the data from a direct CAR models, we can choose to compare the exact
+likelihood surface and the approximated surface in each iteration by setting
+\texttt{eval = TRUE} and the range of the $\rho, \sigma^2$ and the number of
+grid points to be evaluated in each coordination. For example,
+
+<<eval=FALSE>>=
+exacts = list(eval = TRUE, rho = c(-0.25, 0.25),
+sigma = c(0.5, 2), length = 100)
+@
+
+
+
+<<fig.show='hide', results="hide">>=
+rsm.mcmle1 <- rsmMCL(data = mydata1, psi0 = c(-0.1, sigmabeta(-0.1, mydata1)),
+                     family = "gauss",
+                     control = list(n.iter= 10, trace.all = TRUE))
+@
+
+The same thing can be done for the GLM model with latent CAR variables, except
+that there is no exact likelihood values to be compared.
+<<eval=FALSE>>=
+rsm.mcmle2 <- rsmMCL(data = mydata5, psi0 = c(0, 1, 2, 2), family = "poisson",
+                    control = list(n.iter = 20, trace.all = TRUE))
+@
+
+The result can be printed by \texttt{summary}.
+<<>>=
+summary(rsm.mcmle1, family = "gauss", mc.covar=FALSE)
+@
+
+The final fitted response surface can be plotted by setting \texttt{trace.all =
+  FALSE}.
+
+<<>>=
+plot(rsm.mcmle1, family = "gauss", trace.all = FALSE)
+@
+
+Otherwise, the entire evolution of the response surface is shown.
+<<>>=
+plot(rsm.mcmle1, family = "gauss")
+@
+
+
+\bibliography{references}
+
+\end{document}
