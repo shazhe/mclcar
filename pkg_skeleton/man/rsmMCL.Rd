@@ -209,7 +209,7 @@ summary(rsm.mcmle2, family = "poisson",  mc.covar=TRUE)
 plot(rsm.mcmle2, family = "poisson")
 }
 
-\keyword{CAR}
-\keyword{Spatial}
-\keyword{Monte Carlo likelihood}
-\keyword{Response surface design}
+\concept{CAR}
+\concept{Spatial}
+\concept{Monte Carlo likelihood}
+\concept{Response surface design}

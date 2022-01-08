@@ -92,5 +92,5 @@ sigmabeta(rho = 0.1, data = mydata)
 ## find the maximum pseudo-likelihood estimates
 mple.dCAR(data = mydata)
 }
-\keyword{CAR}
-\keyword{likelihood}
+\concept{CAR}
+\concept{likelihood}

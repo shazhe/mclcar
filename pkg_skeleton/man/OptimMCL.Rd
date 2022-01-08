@@ -152,6 +152,6 @@ iter.mcmle <- OptimMCL(data = mydata2, psi0 = pars1, family = "binom",
 summary(iter.mcmle, family = "binom", mc.covar=TRUE)
 }
 
-\keyword{Monte Carlo likelihood}
-\keyword{CAR}
-\keyword{Spatial}
+\concept{Monte Carlo likelihood}
+\concept{CAR}
+\concept{Spatial}
