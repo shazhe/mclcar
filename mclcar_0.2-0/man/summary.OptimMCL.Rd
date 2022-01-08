@@ -48,6 +48,6 @@ Zhe Sha \email{zhesha1006@gmail.com}
 ## See examples for OptimMCL
 }
 
-\keyword{CAR}
-\keyword{Monte Carlo likelihood}
-\keyword{Spatial}
+\concept{CAR}
+\concept{Monte Carlo likelihood}
+\concept{Spatial}

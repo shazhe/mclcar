@@ -13,4 +13,4 @@ A SpatialPolygonDataFrame contains the geo information and data for plotting
 Lee D 2016. CARBayes: Spatial Generalised Linear Mixed Models for Areal Unit Data. R package version 4.6. https://CRAN.R-project.org/package=CARBayes
 }
 \references{Clayton D, Kaldor J 1987. Empirical Bayes Estimation of Age-standardized Relative Risk for use in Disease Mapping. \emph{Biometrics} 43, 671--681}
-\keyword{datasets}
+\concept{datasets}

@@ -40,7 +40,7 @@ Zhe Sha \email{zhesha1006@gmail.com}
 \examples{
 ## See examples for rsmMCL
 }
-\keyword{CAR}
-\keyword{Monte Carlo likelihood}
-\keyword{Spatial}
-\keyword{Response surface design}
+\concept{CAR}
+\concept{Monte Carlo likelihood}
+\concept{Spatial}
+\concept{Response surface design}

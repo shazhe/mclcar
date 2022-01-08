@@ -84,5 +84,5 @@ mydata4 <- CAR.simGLM(method="binom", n=c(10,10), pars = c(rho, sigma,
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{CAR}
-\keyword{Monte Carlo likelihood}
+\concept{CAR}
+\concept{Monte Carlo likelihood}

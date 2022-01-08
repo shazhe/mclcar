@@ -53,5 +53,6 @@ Zhe Sha \email{zhesha1006@gmail.com}
 %}
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{CAR, HCAR}
-\keyword{Monte Carlo likelihood}
+\concept{CAR}
+\concept{HCAR}
+\concept{Monte Carlo likelihood}

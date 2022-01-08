@@ -55,6 +55,6 @@ Zhe Sha \email{zhesha1006@gmail.com}
 ## See examples for OptimMCL
 }
 
-\keyword{HCAR}
-\keyword{Monte Carlo likelihood}
-\keyword{Spatial}
+\concept{HCAR}
+\concept{Monte Carlo likelihood}
+\concept{Spatial}

@@ -15,4 +15,4 @@ Ronnegard L, Shen X, and Alam M 2010 hglm: A Package for Fitting Hierarchical Ge
 
 \references{Clayton D, Kaldor J 1987. Empirical Bayes Estimation of Age-standardized Relative Risk for use in Disease Mapping. \emph{Biometrics} 43, 671--681}
 
-\keyword{datasets}
+\concept{datasets}

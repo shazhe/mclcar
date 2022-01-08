@@ -108,5 +108,5 @@ TRUE)
 
 }
 
-\keyword{MCMC}
-\keyword{Spatial}
+\concept{MCMC}
+\concept{Spatial}

@@ -182,6 +182,6 @@ get.beta.glm(beta0 = psi.binom[-c(1,2)], rho.sig = psi.binom[1:2],
              mcdata = mc.data2, family = c("binom"))
 }
 
-\keyword{CAR}
-\keyword{glm}
-\keyword{Monte Carlo likelihood}
+\concept{CAR}
+\concept{glm}
+\concept{Monte Carlo likelihood}

@@ -142,6 +142,6 @@ Avar.lik.dCAR(pars = opt$par, psi = psi1, data = mydata1, n.samples =
 
 }
 
-\keyword{Monte Carlo variance}
-\keyword{Monte Carlo likelihood}
-\keyword{CAR}
+\concept{Monte Carlo variance}
+\concept{Monte Carlo likelihood}
+\concept{CAR}
